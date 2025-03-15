@@ -11,21 +11,42 @@
     <div class="container">
         <h1>Coupon Distribution System</h1>
         
-        <div id="status" class="status">
+        <div id="status-message" class="alert">
             Checking status...
         </div>
         
-        <button id="claimButton" class="button">
-            Generate Coupon
+        <div id="timer-container" class="d-none">
+            Time remaining: <span id="countdown">00:00</span>
+        </div>
+        
+        <button id="claim-btn" class="button primary-button">
+            Claim Coupon
         </button>
         
-        <div id="result" class="result"></div>
+        <div id="coupon-container" class="d-none">
+            <h3>Your Coupon:</h3>
+            <div id="coupon-code" class="coupon-code"></div>
+        </div>
         
-        <button id="historyButton" class="button">
-            View History
+        <button id="check-status-btn" class="button secondary-button">
+            Check History
         </button>
         
-        <div id="history" class="history"></div>
+        <div id="history-container" class="d-none">
+            <h3>Claim History</h3>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Claimed At</th>
+                    </tr>
+                </thead>
+                <tbody id="history-table-body"></tbody>
+            </table>
+            <div id="no-history-message" class="d-none">
+                No coupons claimed yet
+            </div>
+        </div>
     </div>
     
     <script src="app.js"></script>
