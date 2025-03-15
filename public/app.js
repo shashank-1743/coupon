@@ -39,9 +39,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // Check status on page load
   checkStatus();
   
-  const API_URL = process.env.NODE_ENV === 'production'
-    ? '/.netlify/functions/api'
-    : '/api';
+  const API_URL = window.location.hostname === 'localhost' 
+    ? '/api'
+    : '/.netlify/functions/api';
+  
+  // Add error handling middleware
+  const handleApiError = (error) => {
+    console.error('API Error:', error);
+    return {
+      success: false,
+      message: 'An error occurred. Please try again later.'
+    };
+  };
   
   // Claim coupon button click handler
   claimBtn.addEventListener('click', async () => {
@@ -110,59 +119,21 @@ document.addEventListener('DOMContentLoaded', () => {
   // Function to check user's claim status
   async function checkStatus() {
     try {
-      checkStatusBtn.disabled = true;
-      checkStatusBtn.textContent = 'Loading...';
+      const response = await fetch(`${API_URL}/status`, {
+        credentials: 'include',
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
       
-      const response = await fetch(`${API_URL}/status`);
-      const data = await response.json();
-      
-      if (data.canClaim) {
-        // User can claim
-        statusMessage.className = 'alert alert-info';
-        statusMessage.textContent = 'You are eligible to claim a coupon!';
-        timerContainer.classList.add('d-none');
-        claimBtn.disabled = false;
-        
-        // Reset end time and clear coupon
-        endTime = null;
-        localStorage.removeItem('couponEndTime');
-        localStorage.removeItem('claimedCouponCode');
-        couponContainer.classList.add('d-none');
-        
-        if (countdownInterval) {
-          clearInterval(countdownInterval);
-          countdownInterval = null;
-        }
-      } else {
-        // User must wait
-        statusMessage.className = 'alert alert-warning';
-        statusMessage.textContent = `You need to wait before claiming another coupon.`;
-        claimBtn.disabled = true;
-        
-        // Only set the end time if it's not already set or if the saved one has expired
-        if (!endTime || endTime <= new Date().getTime()) {
-          endTime = new Date().getTime() + (data.minutesRemaining * 60 * 1000);
-          // Save to localStorage
-          localStorage.setItem('couponEndTime', endTime.toString());
-        }
-        
-        // Make sure the coupon is still visible if it exists
-        const savedCoupon = localStorage.getItem('claimedCouponCode');
-        if (savedCoupon && couponContainer.classList.contains('d-none')) {
-          couponCode.textContent = savedCoupon;
-          couponContainer.classList.remove('d-none');
-        }
-        
-        // Start or continue the countdown
-        startCountdown();
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+      
+      return await response.json();
     } catch (error) {
-      console.error('Error checking status:', error);
-      statusMessage.className = 'alert alert-danger';
-      statusMessage.textContent = 'An error occurred while checking your status.';
-    } finally {
-      checkStatusBtn.disabled = false;
-      checkStatusBtn.textContent = 'Check History';
+      console.error('Status check failed:', error);
+      return handleApiError(error);
     }
   }
   

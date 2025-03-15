@@ -3,17 +3,18 @@ const serverless = require('serverless-http');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const { sequelize } = require('../../models');
 const couponRoutes = require('../../routes/couponRoutes');
 
-// Initialize express app
 const app = express();
 
 // Middleware
 app.use(cors({
-  origin: true,
-  credentials: true
+  origin: '*', // Allow all origins in production
+  credentials: true,
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Cookie']
 }));
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -22,29 +23,27 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-// Log environment variables
-console.log('Environment:', {
-  nodeEnv: process.env.NODE_ENV,
-  dbConnected: !!process.env.MONGO_URI,
-  cooldown: process.env.CLAIM_COOLDOWN_MINUTES
+// Debug logging
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
 });
 
-// Routes
-app.use('/.netlify/functions/api', couponRoutes);
+// Routes - Remove the /.netlify/functions/api prefix
+app.use('/', couponRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'API is running' });
 });
 
-// Error handling middleware
+// Error handling
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error('Error:', err);
   res.status(500).json({
     success: false,
     message: 'An error occurred on the server'
   });
 });
 
-// Export the serverless function
 module.exports.handler = serverless(app);
