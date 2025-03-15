@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
   checkStatus();
   
   const API_URL = process.env.NODE_ENV === 'production'
-    ? 'https://your-netlify-app.netlify.app/.netlify/functions/api'
+    ? '/.netlify/functions/api'
     : '/api';
   
   // Claim coupon button click handler
