@@ -22,6 +22,13 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
+// Log environment variables
+console.log('Environment:', {
+  nodeEnv: process.env.NODE_ENV,
+  dbConnected: !!process.env.MONGO_URI,
+  cooldown: process.env.CLAIM_COOLDOWN_MINUTES
+});
+
 // Routes
 app.use('/.netlify/functions/api', couponRoutes);
 
