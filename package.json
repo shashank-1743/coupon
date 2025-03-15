@@ -1,7 +1,11 @@
 {
   "name": "coupon-distribution-app",
   "version": "1.0.0",
-  "description": "Round-Robin Coupon Distribution with Abuse Prevention",
+  "description": "A round-robin coupon distribution system with MongoDB",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shashank-1743/coupon.git"
+  },
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

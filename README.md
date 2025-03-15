@@ -1,15 +1,14 @@
-# Round-Robin Coupon Distribution System
+# Coupon Distribution App
 
-A simple web application that distributes coupons to guest users in a round-robin manner while preventing abuse through IP and cookie tracking.
+A round-robin coupon distribution system built with Node.js, Express, and MongoDB.
 
 ## Features
 
-- Coupon distribution in a round-robin fashion
-- Guest access without requiring login
-- Abuse prevention through IP and cookie tracking
-- Cooldown period between coupon claims
-- User-friendly interface with countdown timer
-- Coupon history tracking
+- Automated coupon distribution
+- IP and cookie-based abuse prevention
+- MongoDB integration
+- Round-robin distribution logic
+- Configurable claim cooldown period
 
 ## Abuse Prevention Strategies
 
@@ -26,28 +25,20 @@ A simple web application that distributes coupons to guest users in a round-robi
 - Node.js (v14 or higher)
 - MongoDB (v4.4 or higher)
 
-### Installation
+## Installation
+```bash
+# Clone repository
+git clone https://github.com/YOUR_USERNAME/coupon-distribution-app.git
+cd coupon-distribution-app
 
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd coupon-distribution-app
-   ```
+# Install dependencies
+npm install
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+# Set up environment variables
+cp .env.example .env
 
-3. Configure environment variables:
-   - Copy `.env.example` to `.env`
-   - Update the values as needed:
-     ```properties
-     PORT=3000
-     MONGO_URI=mongodb://localhost:27017/coupon_db
-     CLAIM_COOLDOWN_MINUTES=1
-     NODE_ENV=development
-     ```
+# Edit .env with your MongoDB connection string
+```
 
 4. Start MongoDB service:
    ```bash
@@ -55,15 +46,14 @@ A simple web application that distributes coupons to guest users in a round-robi
    net start MongoDB
    ```
 
-5. Seed the database with initial coupons:
-   ```bash
-   npm run seed
-   ```
+## Usage
+```bash
+# Seed database
+npm run seed
 
-6. Start the application:
-   ```bash
-   npm start
-   ```
+# Start server
+npm start
+```
 
 7. Access the application in your browser:
    ```
@@ -89,7 +79,7 @@ To test the abuse prevention mechanisms:
 
 ## Environment Variables
 
-- `PORT`: The port number for the server (default: 3000)
+- `PORT`: Server port (default: 3000)
 - `MONGO_URI`: MongoDB connection string
-- `CLAIM_COOLDOWN_MINUTES`: Cooldown period between claims in minutes (default: 1)
-- `NODE_ENV`: Application environment (development/production)
+- `CLAIM_COOLDOWN_MINUTES`: Cooldown between claims
+- `NODE_ENV`: development/production
