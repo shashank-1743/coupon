@@ -9,17 +9,7 @@
   external_node_modules = ["mongoose"]
 
 [[redirects]]
-  from = "/styles.css"
-  to = "/styles.css"
-  status = 200
-
-[[redirects]]
-  from = "/app.js"
-  to = "/app.js"
-  status = 200
-
-[[redirects]]
-  from = "/api/*"
+  from = "/.netlify/functions/api/*"
   to = "/.netlify/functions/api/:splat"
   status = 200
   force = true

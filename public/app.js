@@ -1,6 +1,4 @@
-const API_URL = window.location.hostname === 'localhost' 
-  ? '/api'
-  : '/.netlify/functions/api';
+const API_URL = '/.netlify/functions/api';
 
 let countdownInterval;
 let endTime = null;
@@ -8,10 +6,21 @@ let endTime = null;
 // Core API Functions
 async function checkStatus() {
     try {
+        console.log('Checking status...');
         const response = await fetch(`${API_URL}/status`, {
-            credentials: 'include'
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json'
+            }
         });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
+        console.log('Status response:', data);
         updateStatusDisplay(data);
         return data;
     } catch (error) {
@@ -23,16 +32,25 @@ async function checkStatus() {
 async function claimCoupon() {
     const claimBtn = document.getElementById('claim-btn');
     try {
+        console.log('Claiming coupon...');
         claimBtn.disabled = true;
         claimBtn.textContent = 'Claiming...';
         
         const response = await fetch(`${API_URL}/claim`, {
             method: 'POST',
             credentials: 'include',
-            headers: { 'Content-Type': 'application/json' }
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
         });
         
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
+        console.log('Claim response:', data);
         handleClaimResponse(data);
     } catch (error) {
         console.error('Error claiming coupon:', error);

@@ -10,8 +10,11 @@ const app = express();
 // Middleware
 app.use(cors({
   origin: true,
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Cookie']
 }));
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -34,7 +37,7 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use('/', couponRoutes);
+app.use('/.netlify/functions/api', couponRoutes);
 
 // Error handling
 app.use((err, req, res, next) => {
