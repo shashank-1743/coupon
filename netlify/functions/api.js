@@ -26,6 +26,13 @@ app.use((req, res, next) => {
   next();
 });
 
+// Cache control and content type
+app.use((req, res, next) => {
+  res.header('Cache-Control', 'no-store');
+  res.header('Content-Type', 'application/json');
+  next();
+});
+
 // Routes
 app.use('/', couponRoutes);
 
