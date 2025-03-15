@@ -232,3 +232,107 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 });
+
+const API_URL = window.location.hostname === 'localhost' 
+  ? '/api'
+  : '/.netlify/functions/api';
+
+// Update status display
+async function updateStatus() {
+  try {
+    const response = await fetch(`${API_URL}/status`, {
+      credentials: 'include'
+    });
+    const data = await response.json();
+    
+    const statusElement = document.getElementById('status');
+    const claimButton = document.getElementById('claimButton');
+    
+    if (data.canClaim) {
+      statusElement.textContent = 'You can claim a coupon now!';
+      claimButton.disabled = false;
+    } else {
+      statusElement.textContent = `You can claim again in ${data.minutesRemaining} minutes`;
+      claimButton.disabled = true;
+    }
+  } catch (error) {
+    console.error('Status check failed:', error);
+    document.getElementById('status').textContent = 'Error checking status';
+  }
+}
+
+// Claim coupon
+async function claimCoupon() {
+  try {
+    const response = await fetch(`${API_URL}/claim`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const data = await response.json();
+    const resultElement = document.getElementById('result');
+    
+    if (data.success) {
+      resultElement.textContent = `Your coupon code: ${data.coupon.code}`;
+    } else {
+      resultElement.textContent = data.message;
+    }
+    
+    // Update status after claiming
+    updateStatus();
+  } catch (error) {
+    console.error('Claim failed:', error);
+    document.getElementById('result').textContent = 'Error claiming coupon';
+  }
+}
+
+// View history
+async function viewHistory() {
+  try {
+    const response = await fetch(`${API_URL}/history`, {
+      credentials: 'include'
+    });
+    
+    const data = await response.json();
+    const historyElement = document.getElementById('history');
+    
+    if (data.success) {
+      if (data.coupons.length === 0) {
+        historyElement.textContent = 'No coupons claimed yet';
+      } else {
+        const historyList = data.coupons
+          .map(coupon => `Code: ${coupon.code}, Claimed: ${new Date(coupon.claimedAt).toLocaleString()}`)
+          .join('\n');
+        historyElement.textContent = historyList;
+      }
+    } else {
+      historyElement.textContent = 'Error fetching history';
+    }
+  } catch (error) {
+    console.error('History fetch failed:', error);
+    document.getElementById('history').textContent = 'Error fetching history';
+  }
+}
+
+// Add event listeners
+document.addEventListener('DOMContentLoaded', () => {
+  const claimButton = document.getElementById('claimButton');
+  const historyButton = document.getElementById('historyButton');
+  
+  if (claimButton) {
+    claimButton.addEventListener('click', claimCoupon);
+  }
+  
+  if (historyButton) {
+    historyButton.addEventListener('click', viewHistory);
+  }
+  
+  // Check initial status
+  updateStatus();
+  
+  // Update status every minute
+  setInterval(updateStatus, 60000);
+});
